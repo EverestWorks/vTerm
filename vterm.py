@@ -3,6 +3,14 @@ import platform
 import subprocess
 import sys
 import shutil
+try:
+    import readline
+except ImportError:
+    try:
+        import pyreadline as readline
+    except ImportError:
+        print("Module readline or pyreadline not available.")
+
 from pathlib import Path
 import re
 from difflib import get_close_matches
@@ -90,6 +98,11 @@ def create_directory(new_dir):
     except FileExistsError:
         print(f"Directory already exists: {new_dir}")
 
+def autocomplete_path(text, state):
+    directory = os.path.dirname(text)
+    matches = [str(p) for p in Path(directory).iterdir() if str(p).startswith(text)]
+    return matches[state] if state < len(matches) else None
+
 def display_help(command):
     if command in command_help:
         print(f"Help for {command}:")
@@ -170,7 +183,8 @@ def main():
     while True:
         current_directory = os.getcwd()
         try:
-            user_input = input(stylized_prompt(current_directory))
+            user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
+            # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
             if user_input.lower() == "exit":
                 print("Exiting the terminal.")
                 break
@@ -181,59 +195,84 @@ def main():
                 commands = [cmd.strip() for cmd in commands]
                 output = execute_commands_with_pipes(commands)
                 print(output)
-            elif user_input.startswith("grep "):
+            elif user_input.startswith("grep"):
                 _, pattern = user_input.split(" ", 1)
                 # Get the previous command's output from the user
                 previous_output = input("Enter the output to grep: ")
                 output = grep(pattern, previous_output)
                 print(output)
-            elif user_input.startswith("edit "):
-                _, filename = user_input.split(" ", 1)
-                edit_file(filename)
-            elif user_input.startswith("view "):
-                _, filename = user_input.split(" ", 1)
-                view_file(filename)
-            elif user_input.startswith("touch "):
-                _, filename = user_input.split(" ", 1)
-                touch_file(filename)
-            elif user_input.startswith("rm "):
-                _, target = user_input.split(" ", 1)
+            elif user_input.startswith("edit"):
+                try:
+                    _, filename = user_input.split(" ", 1)
+                    edit_file(filename)
+                except ValueError:
+                    print("Argument needed. Usage: edit filename")
+                    continue
+            elif user_input.startswith("view"):
+                try:
+                    _, filename = user_input.split(" ", 1)
+                    view_file(filename)
+                except ValueError:
+                    print("Argument needed. Usage: view filename")
+                    continue
+            elif user_input.startswith("touch"):
+                try:
+                    _, filename = user_input.split(" ", 1)
+                    touch_file(filename)
+                except ValueError:
+                    print("Argument needed. Usage: touch filename")
+                    continue
+            elif user_input.startswith("rm"):
+                try:
+                    _, target = user_input.split(" ", 1)
+                except ValueError:
+                    print("Argument needed. Usage: rm file OR rm -r directory")
+                    continue
                 remove_file_or_directory(target)
-            elif " " in user_input:
-                command, args = user_input.split(" ", 1)
-                if args.strip() == "":
-                    display_command_usage(command)
-                elif command.lower() == "copy":
-                    _, source, destination = user_input.split(" ", 2)
-                    output = copy_directory(source, destination)
-                    print(output)
-                elif command.lower() == "python":
-                    code = ""
-                    while True:
-                        code_line = input("... ")
-                        if code_line.lower() == "end":
-                            break
-                        code += code_line + "\n"
-                    output = execute_python_code(code)
-                    print(output)
-                elif command.lower() == "ls":
-                    list_files_in_current_directory()
-                elif command.lower() == "cd":
-                    change_directory(args)
-                elif command.lower() == "mkdir":
-                    create_directory(args)
-                elif command.lower() == "help":
-                    display_help(args)
-                elif command.lower() == "man":  
-                    display_help(args)
+            elif user_input.startswith("ls"):
+                list_files_in_current_directory()
+            elif user_input.startswith("cd"):
+                try:
+                    _, new_dir = user_input.split(" ", 1)
+                except ValueError:
+                    print("Argument needed. Usage: cd directory")
+                    continue
+                change_directory(new_dir)
+            elif user_input.startswith("mkdir"):
+                args = user_input.split()
+                if len(args) > 1:
+                    new_dir = args[1]
                 else:
-                    suggested_commands = suggest_commands(command)
-                    if suggested_commands:
-                        print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
-                    else:
-                        print("Command not found: " + user_input)
+                    print("Argument needed. Usage: mkdir directory")
+                    continue
+                create_directory(new_dir)
+            elif user_input.startswith("help"):
+                args = user_input.split(" ", 1)
+                if len(args) > 1:
+                    display_help(args[1])
+                else:
+                    print("Argument needed. Usage: help command")
+            elif user_input.startswith("man"):
+                args = user_input.split(" ", 1)
+                if len(args) > 1:
+                    display_help(args[1])
+                else:
+                    print("Argument needed. Usage: man command")
+            elif user_input.startswith("python"):
+                code = ""
+                while True:
+                    code_line = input("... ")
+                    if code_line.lower() == "end":
+                        break
+                    code += code_line + "\n"
+                output = execute_python_code(code)
+                print(output)
             else:
-                print("Command not found: " + user_input)
+                suggested_commands = suggest_commands(user_input)
+                if suggested_commands:
+                    print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
+                else:
+                    print("Command not found: " + user_input)
         except KeyboardInterrupt:
             print("\nUse 'exit' to exit the terminal.")
             continue
