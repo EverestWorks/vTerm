@@ -3,14 +3,6 @@ import platform
 import subprocess
 import sys
 import shutil
-try:
-    import readline
-except ImportError:
-    try:
-        import pyreadline as readline
-    except ImportError:
-        print("Module readline or pyreadline not available.")
-
 from pathlib import Path
 import re
 from difflib import get_close_matches
