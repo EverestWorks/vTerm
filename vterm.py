@@ -3,14 +3,6 @@ import platform
 import subprocess
 import sys
 import shutil
-try:
-    import readline
-except ImportError:
-    try:
-        import pyreadline as readline
-    except ImportError:
-        print("Module readline or pyreadline not available.")
-
 from pathlib import Path
 import re
 from difflib import get_close_matches
@@ -98,11 +90,6 @@ def create_directory(new_dir):
     except FileExistsError:
         print(f"Directory already exists: {new_dir}")
 
-def autocomplete_path(text, state):
-    directory = os.path.dirname(text)
-    matches = [str(p) for p in Path(directory).iterdir() if str(p).startswith(text)]
-    return matches[state] if state < len(matches) else None
-
 def display_help(command):
     if command in command_help:
         print(f"Help for {command}:")
@@ -179,8 +166,6 @@ def suggest_commands(mistyped_command):
 def main():
     clear_screen()
     print_warning_and_developer_info()
-    readline.set_completer_delims('\t\n')
-    readline.parse_and_bind("tab: complete")
 
     while True:
         current_directory = os.getcwd()
