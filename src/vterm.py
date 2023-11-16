@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 import re
 from difflib import get_close_matches
-
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
     "python": "Execute Python code interactively. Usage: python",
@@ -19,8 +18,17 @@ command_help = {
     "edit": "Edit or create a text file. Usage: edit filename",
     "view": "View the content of a text file. Usage: view filename",
     "touch": "Create an empty file. Usage: touch filename",
-    "rm": "Remove a file or directory. Usage: rm filename or rm -r directory"
+    "rm": "Remove a file or directory. Usage: rm filename or rm -r directory",
+    "version": "Prints the terminal version"
 }
+
+
+
+version = "vTerm 0.0.100"
+
+def get_version():
+    print(f"\033[0;32m{version}\033")
+    print(f"\033[0;31mCopyright 2023 Everestworks All rights reserved.\033")
 
 def print_warning_and_developer_info():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.")
@@ -180,6 +188,8 @@ def main():
             if user_input.lower() == "exit":
                 print("Exiting the terminal.")
                 break
+            elif user_input.lower() == "version":
+                get_version()
             elif user_input.lower() == "clear":
                 clear_screen()
             elif "|" in user_input:
