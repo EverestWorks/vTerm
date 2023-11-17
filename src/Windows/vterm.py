@@ -5,6 +5,8 @@ import shutil
 from pathlib import Path
 import re
 from difflib import get_close_matches
+import winsound
+
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
     "python": "Execute Python code interactively. Usage: python",
@@ -18,20 +20,28 @@ command_help = {
     "view": "View the content of a text file. Usage: view filename",
     "touch": "Create an empty file. Usage: touch filename",
     "rm": "Remove a file or directory. Usage: rm filename or rm -r directory",
-    "version": "Prints the terminal version"
+    "version": "Prints the terminal version",
+    "celebrate": "Celebrates. What more do I need to tell you?"
 }
 
 
 
 version = "vTerm 0.0.100"
 
+
+def celebrate():
+    print("yay!")
+    winsound.PlaySound('tada.wav', winsound.SND_FILENAME)
+    
+
 def get_version():
     print(f"\033[0;32m{version}\033")
-    print(f"\033[0;31mCopyright 2023 Everestworks All rights reserved.\033")
+    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
 
-def print_warning_and_developer_info():
+def warning():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.")
     print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
+    
 
 def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
@@ -104,10 +114,10 @@ def autocomplete_path(text, state):
 
 def display_help(command):
     if command in command_help:
-        print(f"Help for {command}:")
+        print(f"{command}:")
         print(command_help[command])
     else:
-        print(f"Help for {command} not found.")
+        print(f"Help for {command} not found. The command may not exist.")
 
 def display_command_usage(command):
     if command in command_help:
@@ -177,7 +187,9 @@ def suggest_commands(mistyped_command):
 
 def main():
     clear_screen()
-    print_warning_and_developer_info()
+    warning()
+    winsound.PlaySound('Startup.wav', winsound.SND_FILENAME)
+    
 
     while True:
         current_directory = os.getcwd()
@@ -185,10 +197,13 @@ def main():
             user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
             # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
             if user_input.lower() == "exit":
-                print("Exiting the terminal.")
+                print("logout")
+                winsound.PlaySound('Shutdown.wav', winsound.SND_FILENAME)
                 break
             elif user_input.lower() == "version":
                 get_version()
+            elif user_input.lower() == "celebrate":
+                celebrate()
             elif user_input.lower() == "clear":
                 clear_screen()
             elif "|" in user_input:

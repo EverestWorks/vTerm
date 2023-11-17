@@ -23,10 +23,10 @@ Needed: Python 3.5+
 
 
 If you do not have the pyinstaller or  install with the command: 
-`pip install pyinstaller` or 
+`pip install pyinstaller`
 
 Once pyinstaller is ready, download the source with either
-`gh repo clone EverestWorks/vTerm` (Alert me if it doesn't work)!
+`gh repo clone EverestWorks/vTerm` (Alert us if it doesn't work)!
 
 
 Then change your directory to the source
