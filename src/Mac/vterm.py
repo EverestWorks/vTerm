@@ -6,6 +6,9 @@ from pathlib import Path
 import re
 from difflib import get_close_matches
 import pygame
+import time
+from tqdm import tqdm
+import random
 
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
@@ -27,18 +30,20 @@ command_help = {
 pygame.init()
 pygame.mixer.init()
 tada = pygame.mixer.Sound("tada2.wav")
-startup = pygame.mixer.Sound("Startup (2).wav")
+tada.set_volume(1.0)
+startup = pygame.mixer.Sound("Startup (3).wav")
+startup.set_volume(1.0)
 error = pygame.mixer.Sound("Error2.wav")
 shutdown = pygame.mixer.Sound("Shutdown.wav")
 
 version = "vTerm 0.0.100"
-
 
 def celebrate():
     print("yay!")
     tada.play()
     
     
+
 
 def get_version():
     print(f"\033[0;32m{version}\033")
@@ -190,8 +195,13 @@ def suggest_commands(mistyped_command):
     available_commands = list(command_help.keys())
     suggestions = get_close_matches(mistyped_command, available_commands, n=3, cutoff=0.6)
     return suggestions
-
+#20C20E
 def main():
+    clear_screen()
+    for i in tqdm (range (100), colour='green', desc="Booting..."):
+        wtime = random.uniform(0.001, 0.05)
+        time.sleep(wtime)
+        pass
     clear_screen()
     warning()
     startup.play()
@@ -203,8 +213,9 @@ def main():
             user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
             # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
             if user_input.lower() == "exit":
-                print("logout")
+                print("Shutting Down...")
                 shutdown.play()
+                time.sleep(0.35)
                 break
             elif user_input.lower() == "version":
                 get_version()
@@ -295,8 +306,10 @@ def main():
                     print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
                 else:
                     print("Command not found: " + user_input)
+                    error.play()
         except KeyboardInterrupt:
             print("\nUse 'exit' to exit the terminal.")
+            error.play()
             continue
 
 if __name__ == "__main__":
