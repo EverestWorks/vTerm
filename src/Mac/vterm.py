@@ -59,10 +59,7 @@ def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
 
 def clear_screen():
-    if platform.system() == "Windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+    os.system("clear")
 
 def run_command(command):
     try:

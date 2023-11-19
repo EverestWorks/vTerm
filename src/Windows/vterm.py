@@ -1,3 +1,4 @@
+#Imports
 import os
 import platform
 import subprocess
@@ -5,8 +6,12 @@ import shutil
 from pathlib import Path
 import re
 from difflib import get_close_matches
-import winsound
+import pygame
+import time
+from tqdm import tqdm
+import random
 
+#Command Dict.
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
     "python": "Execute Python code interactively. Usage: python",
@@ -24,33 +29,39 @@ command_help = {
     "celebrate": "Celebrates. What more do I need to tell you?"
 }
 
+#Pygame Setup
+pygame.init()
+pygame.mixer.init()
+tada = pygame.mixer.Sound("tada2.wav")
+tada.set_volume(1.0)
+startup = pygame.mixer.Sound("Startup (3).wav")
+startup.set_volume(1.0)
+error = pygame.mixer.Sound("Error2.wav")
+shutdown = pygame.mixer.Sound("Shutdown.wav")
 
-
+#Misc.
 version = "vTerm 0.0.100"
 
-
+#Commands
 def celebrate():
     print("yay!")
-    winsound.PlaySound('tada.wav', winsound.SND_FILENAME)
-    
+    tada.play()
 
 def get_version():
     print(f"\033[0;32m{version}\033")
-    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
+    print("\033[1;34mCopyright: \033[1;36mEverestWorks @2023\033[0m\n")
 
 def warning():
-    print("\033[1;31mWarning: This is a development environment, and there may be bugs.")
-    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
+    print("\033[1;31mWarning: This is a development environment, and there may be bugs.\033[0m")
+    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
+    print("\033[0;37mType 'help -h' to view available commands\033[0m\n")
     
 
 def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
 
 def clear_screen():
-    if platform.system() == "Windows":
-        os.system("cls")
-    else:
-        os.system("clear")
+    os.system("cls")
 
 def run_command(command):
     try:
@@ -113,11 +124,19 @@ def autocomplete_path(text, state):
     return matches[state] if state < len(matches) else None
 
 def display_help(command):
-    if command in command_help:
+    available_commands = list(command_help.keys())
+    
+    if command == "-h":
+        print("Available commands:")
+        for cmd in available_commands:
+            print(f"  - {cmd}")
+        print("\nUse 'help <COMMAND>' to receive help on a specific command.")
+    elif command in command_help:
         print(f"{command}:")
         print(command_help[command])
     else:
         print(f"Help for {command} not found. The command may not exist.")
+
 
 def display_command_usage(command):
     if command in command_help:
@@ -185,10 +204,16 @@ def suggest_commands(mistyped_command):
     suggestions = get_close_matches(mistyped_command, available_commands, n=3, cutoff=0.6)
     return suggestions
 
+#Brains
 def main():
     clear_screen()
+    for i in tqdm (range (100), colour='green', desc="Booting..."):
+        wtime = random.uniform(0.001, 0.05)
+        time.sleep(wtime)
+        pass
+    clear_screen()
     warning()
-    winsound.PlaySound('Startup.wav', winsound.SND_FILENAME)
+    startup.play()
     
 
     while True:
@@ -197,8 +222,9 @@ def main():
             user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
             # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
             if user_input.lower() == "exit":
-                print("logout")
-                winsound.PlaySound('Shutdown.wav', winsound.SND_FILENAME)
+                print("Shutting Down...")
+                shutdown.play()
+                time.sleep(0.35)
                 break
             elif user_input.lower() == "version":
                 get_version()
@@ -206,6 +232,7 @@ def main():
                 celebrate()
             elif user_input.lower() == "clear":
                 clear_screen()
+                warning()
             elif "|" in user_input:
                 commands = user_input.split("|")
                 commands = [cmd.strip() for cmd in commands]
@@ -267,7 +294,7 @@ def main():
                 if len(args) > 1:
                     display_help(args[1])
                 else:
-                    print("Argument needed. Usage: help command")
+                    display_help()
             elif user_input.startswith("man"):
                 args = user_input.split(" ", 1)
                 if len(args) > 1:
@@ -289,9 +316,11 @@ def main():
                     print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
                 else:
                     print("Command not found: " + user_input)
+                    error.play()
         except KeyboardInterrupt:
             print("\nUse 'exit' to exit the terminal.")
+            error.play()
             continue
-
+#Calling Main
 if __name__ == "__main__":
     main()
