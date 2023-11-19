@@ -50,9 +50,9 @@ def get_version():
     print("\033[1;34mCopyright: \033[1;36mEverestWorks @2023\033[0m\n")
 
 def warning():
-    print("\033[1;31mWarning: This is a development environment, and there may be bugs.")
+    print("\033[1;31mWarning: This is a development environment, and there may be bugs.\033[0m")
     print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
-    print("Type 'help -h' to view available commands \n")
+    print("\033[0;37mType 'help -h' to view available commands\033[0m\n")
     
 
 def stylized_prompt(current_directory):
