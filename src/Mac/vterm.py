@@ -26,14 +26,16 @@ command_help = {
     "celebrate": "Celebrates. What more do I need to tell you?"
 }
 
+S = "Sound"
 pygame.init()
 pygame.mixer.init()
-tada = pygame.mixer.Sound("tada2.wav")
+tada = pygame.mixer.Sound(os.path.join(S,"tada2.wav"))
 tada.set_volume(1.0)
-startup = pygame.mixer.Sound("Startup (3).wav")
+startup = pygame.mixer.Sound(os.path.join(S,"Startup (3).wav"))
 startup.set_volume(1.0)
-error = pygame.mixer.Sound("Error2.wav")
-shutdown = pygame.mixer.Sound("Shutdown.wav")
+error = pygame.mixer.Sound(os.path.join(S,"Error2.wav"))
+err = pygame.mixer.SoundType(os.path.join(S, "Err.wav"))
+shutdown = pygame.mixer.Sound(os.path.join(S,"Shutdown.wav"))
 
 version = "vTerm 0.0.100 | MacOS"
 
@@ -310,6 +312,7 @@ def main():
                 suggested_commands = suggest_commands(user_input)
                 if suggested_commands:
                     print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
+                    err.play()
                 else:
                     print("Command not found: " + user_input)
                     error.play()
