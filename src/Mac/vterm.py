@@ -8,6 +8,7 @@ import pygame
 import time
 from tqdm import tqdm
 import random
+import json
 
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
@@ -25,10 +26,10 @@ command_help = {
     "version": "Prints the terminal version",
     "celebrate": "Celebrates. What more do I need to tell you?"
 }
-
 S = "Sound"
 pygame.init()
 pygame.mixer.init()
+
 tada = pygame.mixer.Sound(os.path.join(S,"tada2.wav"))
 tada.set_volume(1.0)
 startup = pygame.mixer.Sound(os.path.join(S,"Startup (3).wav"))
@@ -36,25 +37,23 @@ startup.set_volume(1.0)
 error = pygame.mixer.Sound(os.path.join(S,"Error2.wav"))
 err = pygame.mixer.SoundType(os.path.join(S, "Err.wav"))
 shutdown = pygame.mixer.Sound(os.path.join(S,"Shutdown.wav"))
+    
 
 version = "vTerm 0.0.100 | MacOS"
 
 def celebrate():
     print("yay!")
     tada.play()
-    
-    
 
-
-def get_version():
+def get_version_colored():
     print(f"\033[0;32m{version}\033")
     print("\033[1;34mCopyright: \033[1;36mEverestWorks @2023\033[0m\n")
 
-def warning():
+def warning_colored():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.\033[0m")
     print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
     print("\033[0;37mType 'help -h' to view available commands\033[0m\n")
-    
+
 
 def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
@@ -202,7 +201,7 @@ def suggest_commands(mistyped_command):
     available_commands = list(command_help.keys())
     suggestions = get_close_matches(mistyped_command, available_commands, n=3, cutoff=0.6)
     return suggestions
-#20C20E
+
 def main():
     clear_screen()
     for i in tqdm (range (100), colour='green', desc="Booting..."):
@@ -210,27 +209,27 @@ def main():
         time.sleep(wtime)
         pass
     clear_screen()
-    warning()
+    warning_colored()
     startup.play()
     
 
     while True:
         current_directory = os.getcwd()
         try:
-            user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
-            # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
+            user_input = input(stylized_prompt(current_directory)).strip()
+            # print("Raw input:", repr(user_input))  #Print raw input for debugging
             if user_input.lower() == "exit":
                 print("Shutting Down...")
                 shutdown.play()
                 time.sleep(0.35)
                 break
             elif user_input.lower() == "version":
-                get_version()
+                get_version_colored()
             elif user_input.lower() == "celebrate":
                 celebrate()
             elif user_input.lower() == "clear":
                 clear_screen()
-                warning()
+                warning_colored()
             elif "|" in user_input:
                 commands = user_input.split("|")
                 commands = [cmd.strip() for cmd in commands]
