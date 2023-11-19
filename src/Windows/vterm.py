@@ -1,6 +1,5 @@
 #Imports
 import os
-import platform
 import subprocess
 import shutil
 from pathlib import Path
