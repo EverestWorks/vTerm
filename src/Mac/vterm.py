@@ -47,11 +47,12 @@ def celebrate():
 
 def get_version():
     print(f"\033[0;32m{version}\033")
-    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
+    print("\033[1;34mCopyright: \033[1;36mEverestWorks @2023\033[0m\n")
 
 def warning():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.")
-    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m\n")
+    print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
+    print("Type 'help -h' to view available commands \n")
     
 
 def stylized_prompt(current_directory):
@@ -124,11 +125,19 @@ def autocomplete_path(text, state):
     return matches[state] if state < len(matches) else None
 
 def display_help(command):
-    if command in command_help:
+    available_commands = list(command_help.keys())
+    
+    if command == "-h":
+        print("Available commands:")
+        for cmd in available_commands:
+            print(f"  - {cmd}")
+        print("\nUse 'help <COMMAND>' to receive help on a specific command.")
+    elif command in command_help:
         print(f"{command}:")
         print(command_help[command])
     else:
         print(f"Help for {command} not found. The command may not exist.")
+
 
 def display_command_usage(command):
     if command in command_help:
@@ -223,6 +232,7 @@ def main():
                 celebrate()
             elif user_input.lower() == "clear":
                 clear_screen()
+                warning()
             elif "|" in user_input:
                 commands = user_input.split("|")
                 commands = [cmd.strip() for cmd in commands]
@@ -284,7 +294,7 @@ def main():
                 if len(args) > 1:
                     display_help(args[1])
                 else:
-                    print("Argument needed. Usage: help command")
+                    display_help()
             elif user_input.startswith("man"):
                 args = user_input.split(" ", 1)
                 if len(args) > 1:
