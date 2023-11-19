@@ -8,7 +8,6 @@ import pygame
 import time
 from tqdm import tqdm
 import random
-import json
 
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy source destination",
