@@ -40,7 +40,7 @@ error = pygame.mixer.Sound("Error2.wav")
 shutdown = pygame.mixer.Sound("Shutdown.wav")
 
 #Misc.
-version = "vTerm 0.0.100"
+version = "vTerm 0.0.100 | Windows"
 
 #Commands
 def celebrate():

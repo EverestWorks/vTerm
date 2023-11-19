@@ -36,7 +36,7 @@ startup.set_volume(1.0)
 error = pygame.mixer.Sound("Error2.wav")
 shutdown = pygame.mixer.Sound("Shutdown.wav")
 
-version = "vTerm 0.0.100"
+version = "vTerm 0.0.100 | MacOS"
 
 def celebrate():
     print("yay!")
