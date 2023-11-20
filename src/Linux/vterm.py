@@ -45,7 +45,7 @@ shutdown = pygame.mixer.Sound(os.path.join(S,"Shutdown.wav"))
 shutdown.set_volume(0.6)
 
 #Misc.
-version = "vTerm 0.0.100 | Windows"
+version = "vTerm 0.0.100 | Linux"
 
 #Commands
 def celebrate():
@@ -66,7 +66,7 @@ def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
 
 def clear_screen():
-    os.system("cls")
+    os.system("clear")
 
 def run_command(command):
     try:
@@ -75,7 +75,6 @@ def run_command(command):
         return output
     except Exception as e:
         return str(e)
-        
 
 def execute_commands_with_pipes(commands):
     processes = []
@@ -97,7 +96,6 @@ def copy_directory(source, destination):
         return f"Directory copied from {source} to {destination}"
     except Exception as e:
         return f"Error copying directory: {str(e)}"
-        
 
 def execute_python_code(code):
     try:
