@@ -8,6 +8,7 @@ import pygame
 import time
 from tqdm import tqdm
 import random
+import readline
 
 command_help = {
     "copy": "Copy a directory from source to destination. Usage: copy <SOURCE DESTINATION>",
@@ -21,10 +22,12 @@ command_help = {
     "edit OR nano OR vim": "Edit or create a text file. Usage: edit <FILENAME> OR nano <FILENAME> OR vim <FILENAME>",
     "view OR cat": "View the content of a text file. Usage: view <FILENAME> OR cat <FILENAME>",
     "create OR touch": "Create an empty file. Usage: create <FILENAME> OR touch <FILENAME>",
-    "rm": "Remove a file or directory. Usage: rm filename or rm -r directory",
+    "rm": "Remove a file or directory. Usage: rm <FILENAME> or rm -r <DIRECTORY>",
     "version": "Prints the terminal version",
-    "celebrate": "Celebrates. What more do I need to tell you?"
+    "celebrate": "Celebrates. What more do I need to tell you?",
+    "help": "Provides Help for available commands. Usage: help <COMMAND>"
 }
+
 S = "Sound"
 pygame.init()
 pygame.mixer.init()
@@ -94,6 +97,10 @@ def copy_directory(source, destination):
 
 def execute_python_code(code):
     try:
+        # Security Constrains
+        if 'os.' in code or 'fork()' in code:
+            raise ValueError("Command contains restricted operations.")
+
         exec_result = exec(code)
         return str(exec_result)
     except Exception as e:
@@ -215,20 +222,23 @@ def suggest_commands(mistyped_command):
 
 def main():
     clear_screen()
-    for i in tqdm (range (100), colour='green', desc="Booting..."):
+    for i in tqdm(range(100), colour='green', desc="Booting..."):
         wtime = random.uniform(0.001, 0.05)
         time.sleep(wtime)
         pass
     clear_screen()
     warning_colored()
     startup.play()
-    
 
     while True:
         current_directory = os.getcwd()
         try:
+            # Read input using readline
             user_input = input(stylized_prompt(current_directory)).strip()
-            # print("Raw input:", repr(user_input))  #Print raw input for debugging
+
+            # Add the input to the command history
+            readline.add_history(user_input)
+
             if user_input.lower() == "exit":
                 print("Shutting Down...")
                 shutdown.play()
