@@ -1,3 +1,4 @@
+#Imports
 import os
 import subprocess
 import shutil
@@ -8,26 +9,26 @@ import pygame
 import time
 from tqdm import tqdm
 import random
-import readline
 
+#Command Dict.
 command_help = {
-    "copy": "Copy a directory from source to destination. Usage: copy <SOURCE DESTINATION>",
+    "copy": "Copy a directory from source to destination. Usage: copy source destination",
     "python": "Execute Python code interactively. Usage: python",
     "ls": "List files and directories in the current directory. Usage: ls",
-    "cd": "Change the current directory. Usage: cd <DIRECTORY>",
-    "mkdir": "Create a new directory. Usage: mkdir <DIRECTORY>",
+    "cd": "Change the current directory. Usage: cd directory",
+    "mkdir": "Create a new directory. Usage: mkdir directory",
     "clear": "Clear the terminal screen. Usage: clear",
-    "man": "View descriptions of available commands. Usage: man <COMMAND>",
+    "man": "View descriptions of available commands. Usage: man command",
     "exit": "Exit the terminal. Usage: exit",
-    "edit OR nano OR vim": "Edit or create a text file. Usage: edit <FILENAME> OR nano <FILENAME> OR vim <FILENAME>",
-    "view OR cat": "View the content of a text file. Usage: view <FILENAME> OR cat <FILENAME>",
-    "create OR touch": "Create an empty file. Usage: create <FILENAME> OR touch <FILENAME>",
-    "rm": "Remove a file or directory. Usage: rm <FILENAME> or rm -r <DIRECTORY>",
+    "edit": "Edit or create a text file. Usage: edit filename",
+    "view": "View the content of a text file. Usage: view filename",
+    "touch": "Create an empty file. Usage: touch filename",
+    "rm": "Remove a file or directory. Usage: rm filename or rm -r directory",
     "version": "Prints the terminal version",
-    "celebrate": "Celebrates. What more do I need to tell you?",
-    "help": "Provides Help for available commands. Usage: help <COMMAND>"
+    "celebrate": "Celebrates. What more do I need to tell you?"
 }
 
+#Pygame Setup
 S = "Sound"
 pygame.init()
 pygame.mixer.init()
@@ -42,23 +43,24 @@ err = pygame.mixer.SoundType(os.path.join(S, "Err.wav"))
 err.set_volume(0.2)
 shutdown = pygame.mixer.Sound(os.path.join(S,"Shutdown.wav"))
 shutdown.set_volume(0.6)
-    
 
-version = "vTerm 0.0.100 | MacOS"
+#Misc.
+version = "vTerm 0.0.100 | Linux"
 
+#Commands
 def celebrate():
     print("yay!")
     tada.play()
 
-def get_version_colored():
+def get_version():
     print(f"\033[0;32m{version}\033")
     print("\033[1;34mCopyright: \033[1;36mEverestWorks @2023\033[0m\n")
 
-def warning_colored():
+def warning():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.\033[0m")
     print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
     print("\033[0;37mType 'help -h' to view available commands\033[0m\n")
-
+    
 
 def stylized_prompt(current_directory):
     return f"\033[1;32m{current_directory}\033[0;35m: >> \033[0m"
@@ -97,10 +99,6 @@ def copy_directory(source, destination):
 
 def execute_python_code(code):
     try:
-        # Security Constrains
-        if 'os.' in code or 'fork()' in code:
-            raise ValueError("Command contains restricted operations.")
-
         exec_result = exec(code)
         return str(exec_result)
     except Exception as e:
@@ -117,7 +115,6 @@ def change_directory(new_dir):
         print(f"Changed directory to: {new_dir}")
     except FileNotFoundError:
         print(f"Directory not found: {new_dir}")
-        error.play()
 
 def create_directory(new_dir):
     try:
@@ -125,7 +122,6 @@ def create_directory(new_dir):
         print(f"Created directory: {new_dir}")
     except FileExistsError:
         print(f"Directory already exists: {new_dir}")
-        err.play()
 
 def autocomplete_path(text, state):
     directory = os.path.dirname(text)
@@ -145,7 +141,6 @@ def display_help(command):
         print(command_help[command])
     else:
         print(f"Help for {command} not found. The command may not exist.")
-        error.play()
 
 
 def display_command_usage(command):
@@ -153,7 +148,6 @@ def display_command_usage(command):
         print(f"Usage: {command_help[command]}")
     else:
         print(f"Usage information for {command} not found.")
-        error.play()
 
 def edit_file(filename):
     try:
@@ -177,7 +171,6 @@ def edit_file(filename):
         print(f"File '{filename}' saved successfully.")
     except Exception as e:
         print(f"Error editing file: {str(e)}")
-        error.play()
 
 def view_file(filename):
     try:
@@ -189,7 +182,6 @@ def view_file(filename):
         print(f"File '{filename}' not found.")
     except Exception as e:
         print(f"Error viewing file: {str(e)}")
-        error.play()
 
 def touch_file(filename):
     try:
@@ -198,7 +190,6 @@ def touch_file(filename):
         print(f"Created empty file: {filename}")
     except Exception as e:
         print(f"Error creating file: {str(e)}")
-        error.play()
 
 def remove_file_or_directory(target):
     try:
@@ -210,47 +201,43 @@ def remove_file_or_directory(target):
             print(f"Removed directory and its contents: {target}")
         else:
             print(f"File or directory not found: {target}")
-            error.play()
     except Exception as e:
         print(f"Error removing file or directory: {str(e)}")
-        error.play()
 
 def suggest_commands(mistyped_command):
     available_commands = list(command_help.keys())
     suggestions = get_close_matches(mistyped_command, available_commands, n=3, cutoff=0.6)
     return suggestions
 
+#Brains
 def main():
     clear_screen()
-    for i in tqdm(range(100), colour='green', desc="Booting..."):
+    for i in tqdm (range (100), colour='green', desc="Booting..."):
         wtime = random.uniform(0.001, 0.05)
         time.sleep(wtime)
         pass
     clear_screen()
-    warning_colored()
+    warning()
     startup.play()
+    
 
     while True:
         current_directory = os.getcwd()
         try:
-            # Read input using readline
-            user_input = input(stylized_prompt(current_directory)).strip()
-
-            # Add the input to the command history
-            readline.add_history(user_input)
-
+            user_input = input(stylized_prompt(current_directory)).strip()   # Add "q " here
+            # print("Raw input:", repr(user_input))  # Optional: Print raw input for debugging
             if user_input.lower() == "exit":
                 print("Shutting Down...")
                 shutdown.play()
                 time.sleep(0.35)
                 break
             elif user_input.lower() == "version":
-                get_version_colored()
+                get_version()
             elif user_input.lower() == "celebrate":
                 celebrate()
             elif user_input.lower() == "clear":
                 clear_screen()
-                warning_colored()
+                warning()
             elif "|" in user_input:
                 commands = user_input.split("|")
                 commands = [cmd.strip() for cmd in commands]
@@ -262,36 +249,32 @@ def main():
                 previous_output = input("Enter the output to grep: ")
                 output = grep(pattern, previous_output)
                 print(output)
-            elif user_input.startswith("edit") or user_input.startswith("nano") or user_input.startswith("vim"):
+            elif user_input.startswith("edit"):
                 try:
                     _, filename = user_input.split(" ", 1)
                     edit_file(filename)
                 except ValueError:
-                    print("Argument needed. Usage: edit OR nano OR vim <FILENAME>")
-                    error.play()
+                    print("Argument needed. Usage: edit filename")
                     continue
-            elif user_input.startswith("view") or user_input.startswith("cat"):
+            elif user_input.startswith("view"):
                 try:
                     _, filename = user_input.split(" ", 1)
                     view_file(filename)
                 except ValueError:
-                    print("Argument needed. Usage: view OR cat <FILENAME>")
-                    error.play()
+                    print("Argument needed. Usage: view filename")
                     continue
-            elif user_input.startswith("create") or user_input.startswith("touch"):
+            elif user_input.startswith("touch"):
                 try:
                     _, filename = user_input.split(" ", 1)
                     touch_file(filename)
                 except ValueError:
-                    print("Argument needed. Usage: create OR touch <FILENAME>")
-                    error.play()
+                    print("Argument needed. Usage: touch filename")
                     continue
             elif user_input.startswith("rm"):
                 try:
                     _, target = user_input.split(" ", 1)
                 except ValueError:
-                    print("Argument needed. Usage: rm file OR rm -r <DIRECTORY>")
-                    error.play()
+                    print("Argument needed. Usage: rm file OR rm -r directory")
                     continue
                 remove_file_or_directory(target)
             elif user_input.startswith("ls"):
@@ -300,8 +283,7 @@ def main():
                 try:
                     _, new_dir = user_input.split(" ", 1)
                 except ValueError:
-                    print("Argument needed. Usage: cd <DIRECTORY>")
-                    error.play()
+                    print("Argument needed. Usage: cd directory")
                     continue
                 change_directory(new_dir)
             elif user_input.startswith("mkdir"):
@@ -309,8 +291,7 @@ def main():
                 if len(args) > 1:
                     new_dir = args[1]
                 else:
-                    print("Argument needed. Usage: mkdir <DIRECTORY>")
-                    error.play()
+                    print("Argument needed. Usage: mkdir directory")
                     continue
                 create_directory(new_dir)
             elif user_input.startswith("help"):
@@ -324,8 +305,7 @@ def main():
                 if len(args) > 1:
                     display_help(args[1])
                 else:
-                    print("Argument needed. Usage: man <COMMAND>")
-                    error.play()
+                    print("Argument needed. Usage: man command")
             elif user_input.startswith("python"):
                 code = ""
                 while True:
@@ -339,7 +319,6 @@ def main():
                 suggested_commands = suggest_commands(user_input)
                 if suggested_commands:
                     print(f"Command not found: {user_input}. Did you mean one of these? {', '.join(suggested_commands)}")
-                    err.play()
                 else:
                     print("Command not found: " + user_input)
                     error.play()
@@ -347,6 +326,6 @@ def main():
             print("\nUse 'exit' to exit the terminal.")
             error.play()
             continue
-
+#Calling Main
 if __name__ == "__main__":
     main()
