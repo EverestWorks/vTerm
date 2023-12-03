@@ -34,7 +34,7 @@ pygame.mixer.init()
 
 tada = pygame.mixer.Sound(os.path.join(S,"tada.wav"))
 tada.set_volume(1.0)
-startup = pygame.mixer.Sound(os.path.join(S,"Startup .wav"))
+startup = pygame.mixer.Sound(os.path.join(S,"Startup.wav"))
 startup.set_volume(1.0)
 error = pygame.mixer.Sound(os.path.join(S,"Error.wav"))
 error.set_volume(1.0)
@@ -132,15 +132,21 @@ def autocomplete_path(text, state):
     matches = [str(p) for p in Path(directory).iterdir() if str(p).startswith(text)]
     return matches[state] if state < len(matches) else None
 
-def display_help(command):
+def commands():
     available_commands = list(command_help.keys())
-    
-    if command == "-h":
-        print("Available commands:")
-        for cmd in available_commands:
-            print(f"  - {cmd}")
-        print("\nUse 'help <COMMAND>' to receive help on a specific command.")
-    elif command in command_help:
+    print("Available commands:")
+    for cmd in available_commands:
+        print(f"  - {cmd}")
+    print("\nUse 'help <COMMAND>' to receive help on a specific command.")
+
+def display_help(command):
+    # available_commands = list(command_help.keys())
+    # if command == "":
+    #     print("Available commands:")
+    #     for cmd in available_commands:
+    #         print(f"  - {cmd}")
+    #     print("\nUse 'help <COMMAND>' to receive help on a specific command.")
+    if command in command_help:
         print(f"{command}:")
         print(command_help[command])
     else:
@@ -318,7 +324,7 @@ def main():
                 if len(args) > 1:
                     display_help(args[1])
                 else:
-                    display_help()
+                    help()
             elif user_input.startswith("man"):
                 args = user_input.split(" ", 1)
                 if len(args) > 1:
@@ -335,6 +341,8 @@ def main():
                     code += code_line + "\n"
                 output = execute_python_code(code)
                 print(output)
+            elif user_input.startswith("quit"):
+                print("Type 'exit' to shutdown vTerm")
             else:
                 suggested_commands = suggest_commands(user_input)
                 if suggested_commands:
