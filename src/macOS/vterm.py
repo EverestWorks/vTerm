@@ -57,7 +57,7 @@ def get_version_colored():
 def warning_colored():
     print("\033[1;31mWarning: This is a development environment, and there may be bugs.\033[0m")
     print("\033[1;34mCopyright: \033[1;36mEverest works @2023\033[0m")
-    print("\033[0;37mType 'help -h' to view available commands\033[0m\n")
+    print("\033[0;37mType 'commands' to view available commands\033[0m\n")
 
 
 def stylized_prompt(current_directory):
@@ -114,7 +114,7 @@ def list_files_in_current_directory():
 def change_directory(new_dir):
     try:
         os.chdir(new_dir)
-        print(f"Changed directory to: {new_dir}")
+        # print(f"Changed directory to: {new_dir}")
     except FileNotFoundError:
         print(f"Directory not found: {new_dir}")
         error.play()
@@ -304,10 +304,9 @@ def main():
                 list_files_in_current_directory()
             elif user_input.startswith("cd"):
                 try:
-                    _, new_dir = user_input.split(" ", 1)
+                    _, new_dir = user_input.splcit(" ", 1)
                 except ValueError:
-                    print("Argument needed. Usage: cd <DIRECTORY>")
-                    error.play()
+                    change_directory('/')
                     continue
                 change_directory(new_dir)
             elif user_input.startswith("mkdir"):
@@ -319,7 +318,7 @@ def main():
                     error.play()
                     continue
                 create_directory(new_dir)
-            elif user_input.startswith("help"):
+            elif user_input.startswith("commands"):
                 args = user_input.split(" ", 1)
                 if len(args) > 1:
                     display_help(args[1])
