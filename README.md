@@ -1,8 +1,11 @@
 # vTerm
 
 vTerm is a professionally oriented terminal, which will be packaged with vSuite (coming soon).
-For this, we used our own homegrown command line framwork now with color. **NOTE! this is a repository to have an original reference, and is in no means the source.
-Actual builds will vary drastically from this, as this is an early version 2 of the original tests.**
+For this, we used our own homegrown command line framework now with color.
+
+**NOTE! This is a repository to have an original reference and is by no means the source.
+Actual builds and their respective details will vary drastically from this, as this is an early public beta of the original tests conducted. 
+Run at your own risk, as this will not be maintained, and is only for archival purposes.**
 
 ==========================================
 
@@ -11,8 +14,6 @@ Actual builds will vary drastically from this, as this is an early version 2 of 
 Version 0.0.100
 
 Operating Systems: Windows, MacOS, Linux
-
-Framework: vFrame v0.0.100
 
 ==========================================
 
