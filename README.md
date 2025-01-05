@@ -1,7 +1,8 @@
 # vTerm
 
 vTerm is a professionally oriented terminal, which will be packaged with vSuite (coming soon).
-For this, we used our own homegrown command line framwork now with color.
+For this, we used our own homegrown command line framwork now with color. **NOTE! this is a repository to have an original reference, and is in no means the source.
+Actual builds will vary drastically from this, as this is an early version 2 of the original tests.**
 
 ==========================================
 
